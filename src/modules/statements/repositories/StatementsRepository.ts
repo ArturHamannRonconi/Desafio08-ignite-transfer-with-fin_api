@@ -13,19 +13,8 @@ export class StatementsRepository implements IStatementsRepository {
     this.repository = getRepository(Statement)
   }
 
-  async create({
-    user_id,
-    amount,
-    description,
-    type
-  }: ICreateStatementDTO): Promise<Statement> {
-    const statement = this.repository.create({
-      user_id,
-      amount,
-      description,
-      type
-    })
-
+  async create(createStatement: ICreateStatementDTO): Promise<Statement> {
+    const statement = this.repository.create(createStatement)
     return this.repository.save(statement)
   }
 
@@ -40,16 +29,32 @@ export class StatementsRepository implements IStatementsRepository {
       { balance: number } | { balance: number, statement: Statement[] }
     >
   {
-    const statement = await this.repository.find({
+    const deposit_withdraw_statement = await this.repository.find({
       where: { user_id }
     })
 
+    const receiver_statement = await this.repository.find({
+      where: { receiver_id: user_id }
+    })
+
+    const statement = [...deposit_withdraw_statement, ...receiver_statement]
+
+
     const balance = statement.reduce((acc, operation) => {
-      if (operation.type === 'deposit') {
-        return acc + operation.amount
-      } else {
-        return acc - operation.amount
-      }
+
+      const operationIsDeposit = operation.type === 'deposit'
+      const operationIsWithDraw = operation.type === 'withdraw'
+      const operationIsTrasnfer = operation.type === 'transfer'
+      const userIsSender = operation.sender_id === user_id
+      const userIsReceiver = operation.receiver_id === user_id
+
+      if(operationIsDeposit || (operationIsTrasnfer && userIsReceiver))
+        acc += operation.amount
+
+      if(operationIsWithDraw || (operationIsTrasnfer && userIsSender))
+        acc -= operation.amount
+
+      return acc
     }, 0)
 
     if (with_statement) {

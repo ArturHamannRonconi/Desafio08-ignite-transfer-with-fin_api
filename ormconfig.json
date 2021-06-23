@@ -3,7 +3,7 @@
   "password": "password",
   "name": "default",
   "type": "postgres",
-  "host": "localhost",
+  "host": "database",
   "port": 5432,
   "database": "fin_api",
   "entities": [

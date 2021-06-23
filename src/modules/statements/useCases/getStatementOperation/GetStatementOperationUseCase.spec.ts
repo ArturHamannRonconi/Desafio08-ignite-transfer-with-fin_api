@@ -15,6 +15,7 @@ describe('Get statement operation', () => {
   enum OperationType {
     DEPOSIT = 'deposit',
     WITHDRAW = 'withdraw',
+    TRANSFER = 'transfer'
   }
 
   const user = {

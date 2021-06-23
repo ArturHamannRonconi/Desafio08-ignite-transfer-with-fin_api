@@ -13,6 +13,7 @@ describe('Create a statement', () => {
   enum OperationType {
     DEPOSIT = 'deposit',
     WITHDRAW = 'withdraw',
+    TRANSFER = 'transfer'
   }
 
   const user = {
